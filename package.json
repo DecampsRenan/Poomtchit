@@ -52,6 +52,7 @@
     "react-select": "5.2.1",
     "swagger-cli": "4.0.4",
     "swagger-ui-react": "4.1.2",
+    "tone": "^14.7.77",
     "zustand": "3.6.7"
   },
   "devDependencies": {

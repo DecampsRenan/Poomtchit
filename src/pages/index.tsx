@@ -1,7 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Button, Center, Heading, Stack, Text } from '@chakra-ui/react';
+import { Button, Center, Heading, Stack } from '@chakra-ui/react';
 import Head from 'next/head';
+
+// import * as Tone from 'tone';
 
 const Index = () => {
   const recordedChunksRef = useRef([]);
@@ -26,7 +28,10 @@ const Index = () => {
 
     mediaRecorderRef.current.addEventListener('dataavailable', function (e) {
       if (!recordedChunksRef?.current) return;
-      if (e.data.size > 0) recordedChunksRef.current.push(e.data);
+      if (e.data.size > 0) {
+        recordedChunksRef.current.push(e.data);
+        console.log(e.data);
+      }
     });
   };
 
@@ -45,13 +50,21 @@ const Index = () => {
   };
 
   useEffect(() => {
-    const initStream = (stream: MediaStream) => {
-      initSave(stream);
-    };
-
+    // console.log('isSupported ? ', Tone.UserMedia.supported);
+    // const meter = new Tone.Meter();
+    // const mic = new Tone.UserMedia();
+    // let intervalId = null;
+    // mic.open().then(() => {
+    //   mic.connect(meter);
+    //   intervalId = setInterval(() => console.log(meter.getValue()), 100);
+    // });
     navigator.mediaDevices
       .getUserMedia({ audio: true, video: false })
-      .then(initStream);
+      .then(initSave);
+    // return () => {
+    //   mic.close();
+    //   clearInterval(intervalId);
+    // };
   }, []);
 
   return (
