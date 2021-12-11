@@ -1,21 +1,24 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Button, Center, Heading, Text } from '@chakra-ui/react';
+import { Button, Center, Heading, Stack, Text } from '@chakra-ui/react';
 import Head from 'next/head';
 
 const Index = () => {
   const recordedChunksRef = useRef([]);
-  const [isSaving, setIsSaving] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder>();
 
+  const [sounds, setSounds] = useState([]);
+
   // Create a hidden link and use it to download the created file
-  const downloadSoundFile = () => {
-    const recordedChunks = recordedChunksRef.current;
-    const linkElt = document.createElement('a');
-    linkElt.href = URL.createObjectURL(new Blob(recordedChunks));
-    linkElt.download = 'MySound.wav';
-    linkElt.click();
-  };
+  const handleDownloadSample =
+    ({ soundData, name = `${Date.now()}` }) =>
+    () => {
+      const linkElt = document.createElement('a');
+      linkElt.href = URL.createObjectURL(new Blob(soundData));
+      linkElt.download = `${name}.wav`;
+      linkElt.click();
+    };
 
   const initSave = (stream: MediaStream) => {
     const options = { mimeType: 'audio/webm' };
@@ -27,15 +30,18 @@ const Index = () => {
     });
   };
 
-  const handleStop = () => {
+  const handleStopRecording = () => {
     if (!mediaRecorderRef?.current) return;
     mediaRecorderRef.current.stop();
-    setIsSaving(false);
+    setSounds((oldValue) => [...oldValue, recordedChunksRef.current]);
+    recordedChunksRef.current = [];
+    setIsRecording(false);
   };
-  const handleStart = () => {
+
+  const handleStartRecording = () => {
     if (!mediaRecorderRef?.current) return;
     mediaRecorderRef.current.start();
-    setIsSaving(true);
+    setIsRecording(true);
   };
 
   useEffect(() => {
@@ -55,11 +61,28 @@ const Index = () => {
       </Head>
       <Center flex="1" flexDir="column">
         <Heading>Jambox</Heading>
-        <Text>Create a new jam</Text>
-        <Button onClick={downloadSoundFile}>Download file</Button>
-        <Button onClick={isSaving ? handleStop : handleStart}>
-          {isSaving ? 'Stop' : 'Start'}
+        <Button
+          colorScheme="green"
+          onClick={isRecording ? handleStopRecording : handleStartRecording}
+        >
+          {isRecording ? 'Stop recording' : 'Start recording'}
         </Button>
+
+        {!!sounds?.length && (
+          <Stack>
+            {sounds.map((soundData, i) => (
+              <Button
+                key={i}
+                onClick={handleDownloadSample({
+                  soundData,
+                  name: `sample-${i + 1}`,
+                })}
+              >
+                Download sample {i + 1}
+              </Button>
+            ))}
+          </Stack>
+        )}
       </Center>
     </>
   );
