@@ -11,24 +11,24 @@ export const BpmManager = ({ onBpmChange }) => {
   const [bpm, setBpm] = useState(90);
   const oldBpmRef = useRef(bpm);
 
-  useEffect(() => {
-    const synthA = new Tone.FMSynth().toDestination();
-    const synthB = new Tone.AMSynth().toDestination();
-    const beatSound = new Tone.Loop((time) => {
-      synthA.triggerAttackRelease('C6', '38n', time);
-    }, '1n').start(0);
+  // useEffect(() => {
+  //   const synthA = new Tone.FMSynth().toDestination();
+  //   const synthB = new Tone.AMSynth().toDestination();
+  //   const beatSound = new Tone.Loop((time) => {
+  //     synthA.triggerAttackRelease('C6', '38n', time);
+  //   }, '1n').start(0);
 
-    const quarterBeatSound = new Tone.Loop((time) => {
-      synthB.triggerAttackRelease('C5', '38n', time);
-    }, '4n').start(0);
+  //   const quarterBeatSound = new Tone.Loop((time) => {
+  //     synthB.triggerAttackRelease('C5', '38n', time);
+  //   }, '4n').start(0);
 
-    return () => {
-      beatSound.dispose();
-      quarterBeatSound.dispose();
-      synthA.dispose();
-      synthB.dispose();
-    };
-  }, []);
+  //   return () => {
+  //     beatSound.dispose();
+  //     quarterBeatSound.dispose();
+  //     synthA.dispose();
+  //     synthB.dispose();
+  //   };
+  // }, []);
 
   useEffect(() => {
     if (oldBpmRef?.current !== bpm) {

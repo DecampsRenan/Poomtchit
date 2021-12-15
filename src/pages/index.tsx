@@ -36,25 +36,30 @@ const Index = () => {
   const initSave = async (stream: MediaStream) => {
     await Tone.start();
 
-    console.log('ToneJS ready to play');
     const options = { mimeType: 'audio/webm' };
     mediaRecorderRef.current = new MediaRecorder(stream, options);
 
-    mediaRecorderRef.current.addEventListener('dataavailable', function (e) {
+    mediaRecorderRef.current.addEventListener('dataavailable', (e) => {
       if (!recordedChunksRef?.current) return;
       if (e.data.size > 0) {
         recordedChunksRef.current.push(e.data);
-        console.log(e.data);
       }
+    });
+
+    mediaRecorderRef.current.addEventListener('stop', async (e) => {
+      const buffer = new Blob(recordedChunksRef.current);
+      const audioBlobToBuffer = await buffer.arrayBuffer();
+      const audioBuffer = await Tone.context.decodeAudioData(audioBlobToBuffer);
+
+      setSounds((oldValue) => [...oldValue, audioBuffer]);
+      recordedChunksRef.current = [];
+      setIsRecording(false);
     });
   };
 
-  const handleStopRecording = () => {
-    if (!mediaRecorderRef?.current) return;
+  const handleStopRecording = async () => {
+    if (!mediaRecorderRef?.current || !recordedChunksRef?.current) return;
     mediaRecorderRef.current.stop();
-    setSounds((oldValue) => [...oldValue, recordedChunksRef.current]);
-    recordedChunksRef.current = [];
-    setIsRecording(false);
   };
 
   const handleStartRecording = () => {
@@ -64,21 +69,9 @@ const Index = () => {
   };
 
   useEffect(() => {
-    // console.log('isSupported ? ', Tone.UserMedia.supported);
-    // const meter = new Tone.Meter();
-    // const mic = new Tone.UserMedia();
-    // let intervalId = null;
-    // mic.open().then(() => {
-    //   mic.connect(meter);
-    //   intervalId = setInterval(() => console.log(meter.getValue()), 100);
-    // });
     navigator.mediaDevices
       .getUserMedia({ audio: true, video: false })
       .then(initSave);
-    // return () => {
-    //   mic.close();
-    //   clearInterval(intervalId);
-    // };
   }, []);
 
   const handlePlayPause = () => {
@@ -101,9 +94,9 @@ const Index = () => {
         <Spacer />
 
         <SimpleGrid columns={2} spacing={5}>
-          <SoundCard />
-          <SoundCard />
-          <SoundCard />
+          {sounds.map((audioBuffer, i) => (
+            <SoundCard key={i} audioBuffer={audioBuffer} />
+          ))}
         </SimpleGrid>
 
         <Spacer />
@@ -115,7 +108,7 @@ const Index = () => {
           {isRecording ? 'Stop recording' : 'Start recording'}
         </Button>
 
-        {!!sounds?.length && (
+        {/* {!!sounds?.length && (
           <Stack>
             {sounds.map((soundData, i) => (
               <Button
@@ -129,7 +122,7 @@ const Index = () => {
               </Button>
             ))}
           </Stack>
-        )}
+        )} */}
 
         <Button onClick={handlePlayPause}>
           {isPlaying ? `PAUSE` : `PLAY`}
