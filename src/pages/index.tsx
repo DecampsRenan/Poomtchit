@@ -1,16 +1,27 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Button, Center, Heading, Stack } from '@chakra-ui/react';
+import { Button, Flex, SimpleGrid, Spacer, Stack } from '@chakra-ui/react';
 import Head from 'next/head';
+import * as Tone from 'tone';
 
-// import * as Tone from 'tone';
+import { BpmManager } from '@/components/BpmManager';
+import { SoundCard } from '@/components/SoundCard';
 
 const Index = () => {
   const recordedChunksRef = useRef([]);
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder>();
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const [sounds, setSounds] = useState([]);
+
+  useEffect(() => {
+    if (isPlaying) {
+      Tone.Transport.start();
+    } else {
+      Tone.Transport.pause();
+    }
+  }, [isPlaying]);
 
   // Create a hidden link and use it to download the created file
   const handleDownloadSample =
@@ -22,7 +33,10 @@ const Index = () => {
       linkElt.click();
     };
 
-  const initSave = (stream: MediaStream) => {
+  const initSave = async (stream: MediaStream) => {
+    await Tone.start();
+
+    console.log('ToneJS ready to play');
     const options = { mimeType: 'audio/webm' };
     mediaRecorderRef.current = new MediaRecorder(stream, options);
 
@@ -67,13 +81,33 @@ const Index = () => {
     // };
   }, []);
 
+  const handlePlayPause = () => {
+    setIsPlaying(!isPlaying);
+  };
+
+  const handleBpmChange = (bpm) => {
+    Tone.Transport.bpm.rampTo(bpm);
+  };
+
   return (
     <>
       <Head>
         <title>Jambox</title>
       </Head>
-      <Center flex="1" flexDir="column">
-        <Heading>Jambox</Heading>
+      <Flex flex="1" flexDir="column" p="2">
+        {/* BPM Component */}
+        <BpmManager onBpmChange={handleBpmChange} />
+
+        <Spacer />
+
+        <SimpleGrid columns={2} spacing={5}>
+          <SoundCard />
+          <SoundCard />
+          <SoundCard />
+        </SimpleGrid>
+
+        <Spacer />
+
         <Button
           colorScheme="green"
           onClick={isRecording ? handleStopRecording : handleStartRecording}
@@ -96,7 +130,11 @@ const Index = () => {
             ))}
           </Stack>
         )}
-      </Center>
+
+        <Button onClick={handlePlayPause}>
+          {isPlaying ? `PAUSE` : `PLAY`}
+        </Button>
+      </Flex>
     </>
   );
 };
