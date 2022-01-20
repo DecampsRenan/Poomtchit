@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Button, Flex, SimpleGrid, Spacer, Stack } from '@chakra-ui/react';
+import { Box, Button, Flex, SimpleGrid, Spacer } from '@chakra-ui/react';
 import Head from 'next/head';
 import * as Tone from 'tone';
 
@@ -35,6 +35,7 @@ const Index = () => {
 
   const initSave = async (stream: MediaStream) => {
     await Tone.start();
+    setIsPlaying(true);
 
     const options = { mimeType: 'audio/webm' };
     mediaRecorderRef.current = new MediaRecorder(stream, options);
@@ -87,7 +88,7 @@ const Index = () => {
       <Head>
         <title>Jambox</title>
       </Head>
-      <Flex flex="1" flexDir="column" p="2">
+      <Flex flex="1" flexDir="column" p="2" bg="transparent">
         {/* BPM Component */}
         <BpmManager onBpmChange={handleBpmChange} />
 

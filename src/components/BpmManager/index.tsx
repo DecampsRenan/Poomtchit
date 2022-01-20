@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Button, Center, Flex, Text } from '@chakra-ui/react';
+import { Box, Button, Center, Flex, Text } from '@chakra-ui/react';
+import kaboom, { KaboomCtx } from 'kaboom';
 import * as Tone from 'tone';
 
 export type BpmManagerProps = {
@@ -10,25 +11,56 @@ export type BpmManagerProps = {
 export const BpmManager = ({ onBpmChange }) => {
   const [bpm, setBpm] = useState(90);
   const oldBpmRef = useRef(bpm);
+  let k = useRef<KaboomCtx>();
+  let canvasRef = useRef();
 
-  // useEffect(() => {
-  //   const synthA = new Tone.FMSynth().toDestination();
-  //   const synthB = new Tone.AMSynth().toDestination();
-  //   const beatSound = new Tone.Loop((time) => {
-  //     synthA.triggerAttackRelease('C6', '38n', time);
-  //   }, '1n').start(0);
+  useEffect(() => {
+    if (!k.current && canvasRef.current) {
+      k.current = kaboom({
+        canvas: canvasRef.current,
+        background: [255, 255, 255],
+        global: false,
+        touchToMouse: false,
+      });
+    }
+  }, []);
 
-  //   const quarterBeatSound = new Tone.Loop((time) => {
-  //     synthB.triggerAttackRelease('C5', '38n', time);
-  //   }, '4n').start(0);
+  useEffect(() => {
+    if (!k.current) return;
+    let isNewBeat = false;
+    let frameCounter = 10;
 
-  //   return () => {
-  //     beatSound.dispose();
-  //     quarterBeatSound.dispose();
-  //     synthA.dispose();
-  //     synthB.dispose();
-  //   };
-  // }, []);
+    const scheduledEventId = Tone.Transport.scheduleRepeat((time) => {
+      Tone.Draw.schedule(() => {
+        isNewBeat = true;
+      }, time);
+    }, '4n');
+
+    const cancelOnDraw = k.current.onDraw(() => {
+      if (isNewBeat) {
+        frameCounter -= 0.8;
+        k.current.drawRect({
+          width: k.current.width(),
+          height: k.current.height(),
+          pos: k.current.vec2(0, 0),
+          color: k.current.WHITE,
+          outline: {
+            color: k.current.RED,
+            width: k.current.lerp(-frameCounter - 10, 0, 100 * k.current.dt()),
+          },
+        });
+        if (frameCounter <= 0) {
+          isNewBeat = false;
+          frameCounter = 10;
+        }
+      }
+    });
+
+    return () => {
+      Tone.Transport.clear(scheduledEventId);
+      cancelOnDraw();
+    };
+  }, []);
 
   useEffect(() => {
     if (oldBpmRef?.current !== bpm) {
@@ -38,21 +70,32 @@ export const BpmManager = ({ onBpmChange }) => {
   }, [bpm, onBpmChange]);
 
   return (
-    <Flex flexDir="column" bgColor="gray.300" p="2">
-      <Center>
-        <Text fontSize="2xl" fontWeight="bold">
-          {`${bpm} bpm`}
-        </Text>
-      </Center>
-      <Flex>
+    <>
+      <Box
+        as="canvas"
+        ref={canvasRef}
+        position="fixed"
+        zIndex={-1}
+        w="full"
+        h="full"
+        m={-2}
+      />
+      <Flex flexDir="column" bgColor="gray.300" p="2">
         <Center>
-          <Button onClick={() => setBpm(bpm - 1)}>-</Button>
+          <Text fontSize="2xl" fontWeight="bold">
+            {`${bpm} bpm`}
+          </Text>
         </Center>
-        <Center flex="1">TAP (available soon)</Center>
-        <Center>
-          <Button onClick={() => setBpm(bpm + 1)}>+</Button>
-        </Center>
+        <Flex>
+          <Center>
+            <Button onClick={() => setBpm(bpm - 1)}>-</Button>
+          </Center>
+          <Center flex="1">TAP (available soon)</Center>
+          <Center>
+            <Button onClick={() => setBpm(bpm + 1)}>+</Button>
+          </Center>
+        </Flex>
       </Flex>
-    </Flex>
+    </>
   );
 };

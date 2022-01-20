@@ -14,10 +14,10 @@ const externalsStyles = (props) =>
 export const styles = {
   global: (props) => ({
     html: {
-      bg: 'gray.800',
+      bg: 'transparent',
     },
     body: {
-      bg: mode('gray.50', 'gray.800')(props),
+      bg: 'transparent',
       WebkitTapHighlightColor: 'transparent',
     },
     '#chakra-toast-portal > *': {
