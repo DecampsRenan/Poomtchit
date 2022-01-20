@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 
 import { Button, ButtonGroup, Flex } from '@chakra-ui/react';
 import * as Tone from 'tone';

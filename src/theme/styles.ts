@@ -1,5 +1,3 @@
-import { mode } from '@chakra-ui/theme-tools';
-
 import * as externals from './externals';
 
 const externalsStyles = (props) =>

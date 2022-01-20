@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Box, Button, Flex, SimpleGrid, Spacer } from '@chakra-ui/react';
+import { Button, Flex, SimpleGrid, Spacer } from '@chakra-ui/react';
 import Head from 'next/head';
 import * as Tone from 'tone';
 
