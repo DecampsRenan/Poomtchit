@@ -55,7 +55,7 @@ const AppHead = () => {
 
   return (
     <Head>
-      <title>Start UI</title>
+      <title>Jambox</title>
       <meta
         name="viewport"
         content="initial-scale=1, viewport-fit=cover, user-scalable=no"

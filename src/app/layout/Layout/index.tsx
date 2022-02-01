@@ -3,7 +3,6 @@ import React, { useEffect, useState } from 'react';
 import { Flex, useDisclosure } from '@chakra-ui/react';
 import { useLocation } from 'react-router-dom';
 
-import { LoginModalInterceptor } from '@/app/auth/LoginModalInterceptor';
 import { LayoutContext } from '@/app/layout';
 import { Viewport } from '@/components';
 
@@ -28,7 +27,6 @@ export const Layout = ({ children }) => {
         <Flex flex="1" direction="column">
           {children}
         </Flex>
-        <LoginModalInterceptor />
       </Viewport>
     </LayoutContext.Provider>
   );

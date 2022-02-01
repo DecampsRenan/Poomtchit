@@ -1,10 +1,9 @@
 import React, { Suspense } from 'react';
 
-import { ReactQueryDevtools } from 'react-query/devtools';
 import { BrowserRouter, Redirect, Switch } from 'react-router-dom';
 
 import { Layout, Loader } from '@/app/layout';
-import { Route, RoutePublic } from '@/app/router';
+import { RoutePublic } from '@/app/router';
 import { Error404, ErrorBoundary } from '@/errors';
 
 const SessionRoutes = React.lazy(() => import('@/app/session/SessionRoutes'));
@@ -25,7 +24,10 @@ export const App = () => {
                 render={() => <Redirect to="/dashboard" />}
               />
 
-              <Route path="/dashboard" render={() => <DashboardRoutes />} />
+              <RoutePublic
+                path="/dashboard"
+                render={() => <DashboardRoutes />}
+              />
 
               <RoutePublic path="/session" render={() => <SessionRoutes />} />
 
@@ -34,7 +36,6 @@ export const App = () => {
           </Suspense>
         </Layout>
       </BrowserRouter>
-      <ReactQueryDevtools />
     </ErrorBoundary>
   );
 };

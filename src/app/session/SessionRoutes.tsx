@@ -2,7 +2,7 @@ import React from 'react';
 
 import { Switch, useRouteMatch } from 'react-router-dom';
 
-import { Route } from '@/app/router';
+import { RoutePublic } from '@/app/router';
 import { Error404 } from '@/errors';
 
 import { SessionPlayer } from './SessionPlayer';
@@ -12,12 +12,12 @@ const SessionRoutes = () => {
   console.log('url', url);
   return (
     <Switch>
-      <Route
+      <RoutePublic
         exact
         path={`${url}/:sessionId`}
         render={() => <SessionPlayer />}
       />
-      <Route path="*" render={() => <Error404 />} />
+      <RoutePublic path="*" render={() => <Error404 />} />
     </Switch>
   );
 };
