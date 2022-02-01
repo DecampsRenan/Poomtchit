@@ -176,7 +176,10 @@ export const PageDashboard = () => {
                 borderBottomLeftRadius={0}
                 borderLeftWidth={1}
                 colorScheme="red"
-                onClick={() => db.sessions.delete(sessionIdToDelete.current)}
+                onClick={() => {
+                  db.sessions.delete(sessionIdToDelete.current);
+                  onClose();
+                }}
               >
                 Confirm deletion
               </Button>
