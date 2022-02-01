@@ -44,13 +44,13 @@ export const PageDashboard = () => {
   const createNewSession = async () => {
     const now = new Date();
     const sessionName = uuidv4();
-    await db.sessions.add({
+    const sessionId = await db.sessions.add({
       name: sessionName,
       createdAt: now,
       updatedAt: now,
     });
 
-    history.push(`/session/${sessionName}`);
+    history.push(`/session/${sessionId}`);
   };
 
   const handleConfirmDelete = (sessionId) => () => {
@@ -107,6 +107,13 @@ export const PageDashboard = () => {
                 <Text fontSize="sm" color="gray.500">
                   Last opened{' '}
                   {dayjs(session.updatedAt).format('DD/MM/YYYY HH:mm')}
+                </Text>
+                <Text fontSize="sm" color="gray.500">
+                  {session.samples?.length
+                    ? `${session.samples?.length || 0} Sample${
+                        session.samples?.length > 1 ? 's' : ''
+                      }`
+                    : 'No samples'}
                 </Text>
               </Flex>
               <Flex
