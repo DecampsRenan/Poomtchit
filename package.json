@@ -32,6 +32,8 @@
     "@formiz/validations": "1.0.0",
     "axios": "0.24.0",
     "dayjs": "1.10.7",
+    "dexie": "3.2.0",
+    "dexie-react-hooks": "1.1.1",
     "faker": "5.5.3",
     "framer-motion": "5.4.5",
     "history": "5.1.0",
@@ -54,6 +56,7 @@
     "swagger-cli": "4.0.4",
     "swagger-ui-react": "4.1.2",
     "tone": "^14.7.77",
+    "uuid": "8.3.2",
     "zustand": "3.6.7"
   },
   "devDependencies": {

@@ -1,14 +1,14 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Box, Button, Center, Flex, Text } from '@chakra-ui/react';
+import { Box, Button, Center, Flex, Spacer, Text } from '@chakra-ui/react';
 import kaboom, { KaboomCtx } from 'kaboom';
-import * as Tone from 'tone';
+import { Draw, Transport } from 'tone';
 
 export type BpmManagerProps = {
   onBpmChange?(newBpmValue: number): void;
 };
 
-export const BpmManager = ({ onBpmChange }) => {
+export const BpmManager = ({ onBpmChange }: BpmManagerProps) => {
   const [bpm, setBpm] = useState(90);
   const oldBpmRef = useRef(bpm);
   let k = useRef<KaboomCtx>();
@@ -30,8 +30,8 @@ export const BpmManager = ({ onBpmChange }) => {
     let isNewBeat = false;
     let frameCounter = 10;
 
-    const scheduledEventId = Tone.Transport.scheduleRepeat((time) => {
-      Tone.Draw.schedule(() => {
+    const scheduledEventId = Transport.scheduleRepeat((time) => {
+      Draw.schedule(() => {
         isNewBeat = true;
       }, time);
     }, '4n');
@@ -57,17 +57,25 @@ export const BpmManager = ({ onBpmChange }) => {
     });
 
     return () => {
-      Tone.Transport.clear(scheduledEventId);
+      Transport.clear(scheduledEventId);
       cancelOnDraw();
     };
   }, []);
 
+  const handleBpmChange = useCallback(
+    (bpm) => {
+      Transport.bpm.rampTo(bpm);
+      onBpmChange?.(bpm);
+    },
+    [onBpmChange]
+  );
+
   useEffect(() => {
     if (oldBpmRef?.current !== bpm) {
       oldBpmRef.current = bpm;
-      onBpmChange?.(bpm);
+      handleBpmChange(bpm);
     }
-  }, [bpm, onBpmChange]);
+  }, [bpm, handleBpmChange]);
 
   return (
     <>
@@ -90,7 +98,8 @@ export const BpmManager = ({ onBpmChange }) => {
           <Center>
             <Button onClick={() => setBpm(bpm - 1)}>-</Button>
           </Center>
-          <Center flex="1">TAP (available soon)</Center>
+          {/* <Center flex="1">TAP (available soon)</Center> */}
+          <Spacer />
           <Center>
             <Button onClick={() => setBpm(bpm + 1)}>+</Button>
           </Center>

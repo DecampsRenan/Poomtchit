@@ -3,9 +3,8 @@ import React, { useEffect, useState } from 'react';
 import { Flex, useDisclosure } from '@chakra-ui/react';
 import { useLocation } from 'react-router-dom';
 
-import { useAuthContext } from '@/app/auth/AuthContext';
 import { LoginModalInterceptor } from '@/app/auth/LoginModalInterceptor';
-import { LayoutContext, TopBar } from '@/app/layout';
+import { LayoutContext } from '@/app/layout';
 import { Viewport } from '@/components';
 
 export const Layout = ({ children }) => {
@@ -15,7 +14,6 @@ export const Layout = ({ children }) => {
     onClose: navOnClose,
     onOpen: navOnOpen,
   } = useDisclosure();
-  const { isAuthenticated } = useAuthContext();
   const { pathname } = useLocation();
 
   useEffect(() => {
@@ -27,7 +25,6 @@ export const Layout = ({ children }) => {
       value={{ isFocusMode, setIsFocusMode, navIsOpen, navOnClose, navOnOpen }}
     >
       <Viewport>
-        {isAuthenticated && !isFocusMode && <TopBar />}
         <Flex flex="1" direction="column">
           {children}
         </Flex>
