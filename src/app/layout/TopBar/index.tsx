@@ -11,7 +11,7 @@ import {
 import { FiMenu } from 'react-icons/fi';
 import { Link as RouterLink } from 'react-router-dom';
 
-import { AccountMenu, MainMenu, useLayoutContext } from '@/app/layout';
+import { MainMenu, useLayoutContext } from '@/app/layout';
 import { NavDrawer } from '@/app/layout/NavDrawer';
 import { Logo } from '@/components';
 import { useDarkMode } from '@/hooks/useDarkMode';
@@ -63,7 +63,6 @@ export const TopBar = () => {
             <Logo />
           </Box>
           <MainMenu me="auto" ms="4" display={{ base: 'none', md: 'flex' }} />
-          <AccountMenu />
         </Flex>
       </SlideFade>
       <Box h={theme.layout.topBar.height} />
