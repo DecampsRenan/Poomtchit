@@ -9547,11 +9547,6 @@ junk@^3.1.0:
   resolved "https://registry.yarnpkg.com/junk/-/junk-3.1.0.tgz#31499098d902b7e98c5d9b9c80f43457a88abfa1"
   integrity sha512-pBxcB3LFc8QVgdggvZWyeys+hnrNWg4OcZIU/1X59k5jQdLBlCsYGRQaz234SqoRLTCgMH00fY0xRJH+F9METQ==
 
-kaboom@2000.1.8:
-  version "2000.1.8"
-  resolved "https://registry.yarnpkg.com/kaboom/-/kaboom-2000.1.8.tgz#1736d0c0f2ee3f2b8c7adcee60b858352546785b"
-  integrity sha512-NNndGkxZ2Wa+BjPU4DEMMVrwAtUOOiIrnqqyPneExPXo+t3ixOtZEGZ7gUZG3oILnqzCcTSeNyHeZYjPfT37Bg==
-
 kind-of@^3.0.2, kind-of@^3.0.3, kind-of@^3.2.0:
   version "3.2.2"
   resolved "https://registry.yarnpkg.com/kind-of/-/kind-of-3.2.2.tgz#31ea21a734bab9bbb0f32466d893aea51e4a3c64"

@@ -1,12 +1,25 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Button, Flex, SimpleGrid, Spacer } from '@chakra-ui/react';
+import {
+  Button,
+  Flex,
+  IconButton,
+  SimpleGrid,
+  Spacer,
+  Text,
+} from '@chakra-ui/react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import Head from 'next/head';
+import {
+  RiPauseCircleLine,
+  RiPlayCircleLine,
+  RiRecordCircleLine,
+  RiStopCircleLine,
+} from 'react-icons/ri';
 import { useParams } from 'react-router-dom';
 import { ToneAudioBuffer, Transport, context, start } from 'tone';
 
-import { BpmManager } from '@/app/session/BpmManager';
+import { BpmManager, useBpm } from '@/app/session/BpmManager';
 import { SoundCard } from '@/app/session/SoundCard';
 import { db } from '@/config/db';
 
@@ -24,6 +37,7 @@ export const SessionPlayer = () => {
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [sounds, setSounds] = useState<AudioBuffer[]>([]);
+  const { bpm, setBpm } = useBpm();
 
   useEffect(() => {
     if (isLoaded.current) return;
@@ -119,46 +133,45 @@ export const SessionPlayer = () => {
       <Head>
         <title>Jambox</title>
       </Head>
+
       <Flex flex="1" flexDir="column" p="2" bg="transparent">
-        {/* BPM Component */}
-        <BpmManager />
-
-        <Spacer />
-
-        <SimpleGrid columns={2} spacing={5}>
+        <SimpleGrid columns={[2, 3, 4]} spacing={[5, 8]}>
           {sounds.map((audioBuffer, i) => (
             <SoundCard key={i} audioBuffer={audioBuffer} />
           ))}
         </SimpleGrid>
+      </Flex>
 
+      <Flex
+        position="fixed"
+        bottom={0}
+        left={0}
+        right={0}
+        m={2}
+        flexDir="row"
+        p={2}
+        borderRadius="md"
+        shadow="md"
+        borderWidth={1}
+        bgColor="white"
+        alignItems="center"
+      >
+        <BpmManager />
         <Spacer />
-
-        <Button
-          colorScheme="green"
+        <IconButton
+          variant="ghost"
+          colorScheme={isRecording ? 'red' : null}
+          aria-label={isRecording ? 'Stop recording' : 'Start recording'}
+          icon={isRecording ? <RiStopCircleLine /> : <RiRecordCircleLine />}
           onClick={isRecording ? handleStopRecording : handleStartRecording}
-        >
-          {isRecording ? 'Stop recording' : 'Start recording'}
-        </Button>
+        />
 
-        {/* {!!sounds?.length && (
-          <Stack>
-            {sounds.map((soundData, i) => (
-              <Button
-                key={i}
-                onClick={handleDownloadSample({
-                  soundData,
-                  name: `sample-${i + 1}`,
-                })}
-              >
-                Download sample {i + 1}
-              </Button>
-            ))}
-          </Stack>
-        )} */}
-
-        <Button onClick={handlePlayPause}>
-          {isPlaying ? `PAUSE` : `PLAY`}
-        </Button>
+        <IconButton
+          variant="ghost"
+          aria-label={isPlaying ? `PAUSE` : `PLAY`}
+          icon={isPlaying ? <RiPauseCircleLine /> : <RiPlayCircleLine />}
+          onClick={handlePlayPause}
+        />
       </Flex>
     </>
   );
