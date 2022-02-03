@@ -4,8 +4,8 @@ import {
   Alert,
   AlertIcon,
   AlertTitle,
-  Box,
   Button,
+  Flex,
   Heading,
   Modal,
   ModalBody,
@@ -71,12 +71,25 @@ export const PageDashboard = () => {
         </Heading>
 
         {isSessionsEmpty && (
-          <Alert borderRadius="md">
-            <AlertIcon />
-            <Box flex={1}>
-              <AlertTitle fontSize="lg">No session found.</AlertTitle>
-            </Box>
-            <Button onClick={createNewSession}>Create a new one</Button>
+          <Alert
+            borderRadius="md"
+            colorScheme="brand"
+            flexDir="column"
+            justifyContent="flex-start"
+          >
+            <Flex w="full">
+              <AlertIcon />
+              <AlertTitle>No session found.</AlertTitle>
+            </Flex>
+            <Button
+              colorScheme="brand"
+              size="lg"
+              mt={4}
+              w="full"
+              onClick={createNewSession}
+            >
+              Create a new one
+            </Button>
           </Alert>
         )}
 
