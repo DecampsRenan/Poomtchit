@@ -105,23 +105,6 @@ export const BpmManager = ({ onBpmChange }: BpmManagerProps) => {
           </ModalFooter>
         </ModalContent>
       </Modal>
-
-      {/* <Flex
-        flexDir="row"
-        p="2"
-        borderRadius="md"
-        shadow="md"
-        borderWidth={1}
-        bgColor="white"
-      >
-        <Button onClick={() => setBpm(bpm - 1)}>-</Button>
-        <Spacer />
-        <Text fontSize="2xl" fontWeight="bold">
-          {`${bpm} bpm`}
-        </Text>
-        <Spacer />
-        <Button onClick={() => setBpm(bpm + 1)}>+</Button>
-      </Flex> */}
     </>
   );
 };

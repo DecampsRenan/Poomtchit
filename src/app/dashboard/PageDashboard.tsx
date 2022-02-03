@@ -6,7 +6,6 @@ import {
   AlertTitle,
   Box,
   Button,
-  Flex,
   Heading,
   Modal,
   ModalBody,
@@ -18,7 +17,6 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import dayjs from 'dayjs';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
@@ -26,6 +24,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Page, PageContent } from '@/app/layout';
 import { db } from '@/config/db';
+
+import { SessionCard } from './SessionCard';
 
 export const PageDashboard = () => {
   const { t } = useTranslation();
@@ -93,58 +93,12 @@ export const PageDashboard = () => {
 
         <Stack>
           {filteredSessions?.map((session) => (
-            <Flex
-              flexDir="column"
+            <SessionCard
               key={session.id}
-              shadow="md"
-              borderRadius="md"
-              borderWidth={1}
-            >
-              <Flex mb={2} flexDir="column" p={4}>
-                <Text fontWeight="bold">
-                  Session du {dayjs(session.createdAt).format('DD/MM/YYYY')}
-                </Text>
-                <Text fontSize="sm" color="gray.500">
-                  Last opened{' '}
-                  {dayjs(session.updatedAt).format('DD/MM/YYYY HH:mm')}
-                </Text>
-                <Text fontSize="sm" color="gray.500">
-                  {session.samples?.length
-                    ? `${session.samples?.length || 0} Sample${
-                        session.samples?.length > 1 ? 's' : ''
-                      }`
-                    : 'No samples'}
-                </Text>
-              </Flex>
-              <Flex
-                alignItems="center"
-                justifyContent="center"
-                borderTopWidth={1}
-              >
-                <Button
-                  variant="ghost"
-                  borderTopRadius={0}
-                  borderBottomRightRadius={0}
-                  textAlign="center"
-                  flex={1}
-                  colorScheme="red"
-                  onClick={handleConfirmDelete(session.id)}
-                >
-                  Delete
-                </Button>
-                <Button
-                  variant="ghost"
-                  borderTopRadius={0}
-                  borderBottomLeftRadius={0}
-                  textAlign="center"
-                  flex={1}
-                  borderLeftWidth={1}
-                  onClick={handleOpenSession(session.id)}
-                >
-                  Open
-                </Button>
-              </Flex>
-            </Flex>
+              session={session}
+              onDelete={handleConfirmDelete(session.id)}
+              onOpen={handleOpenSession(session.id)}
+            />
           ))}
         </Stack>
 

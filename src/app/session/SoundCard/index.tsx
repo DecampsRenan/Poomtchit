@@ -1,7 +1,26 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-import { Button, ButtonGroup, Flex } from '@chakra-ui/react';
+import {
+  Button,
+  Flex,
+  IconButton,
+  Menu,
+  MenuButton,
+  MenuList,
+  Portal,
+} from '@chakra-ui/react';
+import {
+  RiMore2Fill,
+  RiSkipBackFill,
+  RiStopFill,
+  RiVolumeMuteFill,
+  RiVolumeUpFill,
+} from 'react-icons/ri';
 import { Player, Transport } from 'tone';
+
+import { ConfirmMenuItem } from '@/components';
+
+import { Card } from '../Card';
 
 export type UsePlayerParams = {
   audioBuffer: AudioBuffer;
@@ -78,38 +97,75 @@ export const usePlayer = ({ audioBuffer }: UsePlayerParams) => {
   };
 };
 
-export const SoundCard = ({ audioBuffer }) => {
+export type SoundCardProps = {
+  audioBuffer: AudioBuffer;
+  onRemove?: () => void;
+};
+
+export const SoundCard = ({ audioBuffer, onRemove }: SoundCardProps) => {
   const { isMuted, isPlaying, restart, stop, togglePlay, toggleMute } =
     usePlayer({ audioBuffer });
 
   return (
-    <Flex flexDir="column">
-      <Button
-        rounded="none"
-        minH={120}
-        variant="ghost"
-        onClick={togglePlay}
-        bgColor="cyan.200"
-      >
-        {isPlaying ? 'Stop' : 'Play'}
-      </Button>
-      <ButtonGroup mt="-px" isAttached variant="outline" rounded="none">
+    <Card flexDir="column" p={0}>
+      <Flex justifyContent="center" position="relative">
         <Button
-          disabled={!isPlaying}
-          mr="-px"
+          minHeight={20}
           rounded="none"
+          variant="ghost"
+          onClick={togglePlay}
           w="full"
-          onClick={restart}
         >
-          Begin
+          {isPlaying ? 'Stop' : 'Play'}
         </Button>
-        <Button mr="-px" rounded="none" w="full" onClick={toggleMute}>
-          {isMuted ? 'Unmute' : 'Mute'}
-        </Button>
-        <Button disabled={!isPlaying} rounded="none" w="full" onClick={stop}>
-          Stop
-        </Button>
-      </ButtonGroup>
-    </Flex>
+
+        <Menu>
+          <MenuButton
+            as={IconButton}
+            position="absolute"
+            top={0}
+            right={0}
+            variant="ghost"
+            aria-label="Open sample settings"
+            icon={<RiMore2Fill />}
+          />
+          <Portal>
+            <MenuList>
+              <ConfirmMenuItem
+                confirmText="Are you sure?"
+                onClick={() => onRemove?.()}
+              >
+                Remove sample
+              </ConfirmMenuItem>
+            </MenuList>
+          </Portal>
+        </Menu>
+      </Flex>
+      <Flex borderTopWidth={1}>
+        <IconButton
+          flexGrow={1}
+          disabled={!isPlaying}
+          aria-label="Go to start"
+          icon={<RiSkipBackFill />}
+          rounded="none"
+          onClick={restart}
+        />
+        <IconButton
+          flexGrow={1}
+          rounded="none"
+          icon={isMuted ? <RiVolumeMuteFill /> : <RiVolumeUpFill />}
+          aria-label={isMuted ? 'Unmute' : 'Mute'}
+          onClick={toggleMute}
+        />
+        <IconButton
+          flexGrow={1}
+          icon={<RiStopFill />}
+          disabled={!isPlaying}
+          aria-label="Stop sample"
+          rounded="none"
+          onClick={stop}
+        />
+      </Flex>
+    </Card>
   );
 };

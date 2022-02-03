@@ -1,13 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import {
-  Button,
-  Flex,
-  IconButton,
-  SimpleGrid,
-  Spacer,
-  Text,
-} from '@chakra-ui/react';
+import { Flex, IconButton, SimpleGrid, Spacer } from '@chakra-ui/react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import Head from 'next/head';
 import {
@@ -19,9 +12,11 @@ import {
 import { useParams } from 'react-router-dom';
 import { ToneAudioBuffer, Transport, context, start } from 'tone';
 
-import { BpmManager, useBpm } from '@/app/session/BpmManager';
+import { BpmManager } from '@/app/session/BpmManager';
 import { SoundCard } from '@/app/session/SoundCard';
 import { db } from '@/config/db';
+
+import { Card } from './Card';
 
 export const SessionPlayer = () => {
   const recordedChunksRef = useRef([]);
@@ -30,28 +25,26 @@ export const SessionPlayer = () => {
   const sessionId = parseInt(sessionIdParam, 10);
   const isLoaded = useRef(false);
 
-  const session = useLiveQuery(() => db.sessions.get(sessionId));
+  const samples = useLiveQuery(() => db.samples.where({ sessionId }).toArray());
 
   const [isRecording, setIsRecording] = useState(false);
   const mediaRecorderRef = useRef<MediaRecorder>();
   const [isPlaying, setIsPlaying] = useState(false);
 
   const [sounds, setSounds] = useState<AudioBuffer[]>([]);
-  const { bpm, setBpm } = useBpm();
 
+  // When the page is mounted, load available samples
   useEffect(() => {
-    if (isLoaded.current) return;
-    if (!session || !session.samples?.length) return;
-    const audioSamples = session.samples?.map(
-      (arrayBuffer: ArrayBuffer): AudioBuffer => {
-        const buffer = new Float32Array(arrayBuffer);
-        const toneAudioBuffer = ToneAudioBuffer.fromArray(buffer);
-        return toneAudioBuffer.get();
-      }
-    );
+    if (isLoaded.current || !samples?.length) return;
+    console.log('loading samples');
+    const audioSamples = samples.map((sample): AudioBuffer => {
+      const buffer = new Float32Array(sample.arrayBuffer);
+      const toneAudioBuffer = ToneAudioBuffer.fromArray(buffer);
+      return toneAudioBuffer.get();
+    });
     setSounds(audioSamples);
     isLoaded.current = true;
-  }, [session]);
+  }, [samples]);
 
   useEffect(() => {
     if (isPlaying) {
@@ -61,51 +54,49 @@ export const SessionPlayer = () => {
     }
   }, [isPlaying]);
 
-  const initSave = useCallback(async (stream: MediaStream) => {
-    await start();
+  const initSoundSystem = useCallback(
+    async (stream: MediaStream) => {
+      await start();
 
-    const options = { mimeType: 'audio/webm' };
-    mediaRecorderRef.current = new MediaRecorder(stream, options);
+      const options = { mimeType: 'audio/webm' };
+      mediaRecorderRef.current = new MediaRecorder(stream, options);
 
-    // TODO: memory leak, remember to remove the event
-    mediaRecorderRef.current.addEventListener('dataavailable', (e) => {
-      if (!recordedChunksRef?.current) return;
-      if (e.data.size > 0) {
-        recordedChunksRef.current.push(e.data);
-      }
-    });
+      // TODO: memory leak, remember to remove the event
+      mediaRecorderRef.current.addEventListener('dataavailable', (e) => {
+        if (!recordedChunksRef?.current) return;
+        if (e.data.size > 0) {
+          recordedChunksRef.current.push(e.data);
+        }
+      });
 
-    // TODO: memory leak, remember to remove the event
-    mediaRecorderRef.current.addEventListener('stop', async (e) => {
-      const buffer = new Blob(recordedChunksRef.current);
-      const audioBlobToBuffer = await buffer.arrayBuffer();
-      const audioBuffer = await context.decodeAudioData(audioBlobToBuffer);
+      // TODO: memory leak, remember to remove the event
+      mediaRecorderRef.current.addEventListener('stop', async (e) => {
+        const buffer = new Blob(recordedChunksRef.current);
+        const audioBlobToBuffer = await buffer.arrayBuffer();
+        const audioBuffer = await context.decodeAudioData(audioBlobToBuffer);
+        const toneAudioBuffer = new ToneAudioBuffer(audioBuffer);
 
-      setSounds((oldValue) => [...oldValue, audioBuffer]);
+        // Persist sound in the indexed db
+        try {
+          await db.samples.add({
+            sessionId,
+            arrayBuffer: (toneAudioBuffer.toArray() as Float32Array).buffer,
+          });
+        } catch (error) {
+          console.error(
+            'Something went wrong while saving the new smaple',
+            error
+          );
+        }
 
-      recordedChunksRef.current = [];
-      setIsRecording(false);
-    });
-  }, []);
+        setSounds((oldValue) => [...oldValue, audioBuffer]);
 
-  useEffect(() => {
-    if (!session?.id || !sounds?.length) return;
-    (async () => {
-      try {
-        // persist new sound in local db
-        // convert them into blob
-        const arrayBuffers = sounds.map((audioBuffer) => {
-          const toneAudioBuffer = new ToneAudioBuffer(audioBuffer);
-          const arrayBuffer = toneAudioBuffer.toArray() as Float32Array;
-          return arrayBuffer.buffer;
-        });
-
-        await db.sessions.update(session.id, { samples: arrayBuffers });
-      } catch (error) {
-        console.log('something goes wrong while persisting new sample', error);
-      }
-    })();
-  }, [sounds, session?.id]);
+        recordedChunksRef.current = [];
+        setIsRecording(false);
+      });
+    },
+    [sessionId]
+  );
 
   const handleStopRecording = async () => {
     if (!mediaRecorderRef?.current || !recordedChunksRef?.current) return;
@@ -121,8 +112,8 @@ export const SessionPlayer = () => {
   useEffect(() => {
     navigator.mediaDevices
       .getUserMedia({ audio: true, video: false })
-      .then(initSave);
-  }, [initSave]);
+      .then(initSoundSystem);
+  }, [initSoundSystem]);
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
@@ -134,7 +125,7 @@ export const SessionPlayer = () => {
         <title>Jambox</title>
       </Head>
 
-      <Flex flex="1" flexDir="column" p="2" bg="transparent">
+      <Flex flex="1" flexDir="column" p={2} bg="transparent">
         <SimpleGrid columns={[2, 3, 4]} spacing={[5, 8]}>
           {sounds.map((audioBuffer, i) => (
             <SoundCard key={i} audioBuffer={audioBuffer} />
@@ -142,18 +133,12 @@ export const SessionPlayer = () => {
         </SimpleGrid>
       </Flex>
 
-      <Flex
+      <Card
         position="fixed"
         bottom={0}
         left={0}
         right={0}
         m={2}
-        flexDir="row"
-        p={2}
-        borderRadius="md"
-        shadow="md"
-        borderWidth={1}
-        bgColor="white"
         alignItems="center"
       >
         <BpmManager />
@@ -168,11 +153,11 @@ export const SessionPlayer = () => {
 
         <IconButton
           variant="ghost"
-          aria-label={isPlaying ? `PAUSE` : `PLAY`}
+          aria-label={isPlaying ? 'Stop all sample' : 'Play all samples'}
           icon={isPlaying ? <RiPauseCircleLine /> : <RiPlayCircleLine />}
           onClick={handlePlayPause}
         />
-      </Flex>
+      </Card>
     </>
   );
 };
