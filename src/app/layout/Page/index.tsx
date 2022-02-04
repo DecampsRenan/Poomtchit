@@ -16,7 +16,7 @@ import { useRtl } from '@/hooks/useRtl';
 
 const PageContext = React.createContext(null);
 
-const PageContainer = ({ children, ...rest }) => {
+export const PageContainer = ({ children, ...rest }) => {
   const { hideContainer, containerSize } = useContext(PageContext);
 
   const containerSizes = {

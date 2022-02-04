@@ -1,27 +1,37 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { Flex, IconButton, SimpleGrid, Spacer } from '@chakra-ui/react';
+import {
+  Flex,
+  Heading,
+  IconButton,
+  SimpleGrid,
+  Spacer,
+} from '@chakra-ui/react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import Head from 'next/head';
 import {
+  RiLogoutBoxRLine,
   RiPauseCircleLine,
   RiPlayCircleLine,
   RiRecordCircleLine,
   RiStopCircleLine,
 } from 'react-icons/ri';
-import { useParams } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router-dom';
 import { ToneAudioBuffer, Transport, context, start } from 'tone';
 
+import { Page, PageContent } from '@/app/layout';
 import { BpmManager } from '@/app/session/BpmManager';
 import { SoundCard } from '@/app/session/SoundCard';
 import { db } from '@/config/db';
 
 import { Card } from './Card';
+import { ToolBar } from './ToolBar';
 
 export const SessionPlayer = () => {
   const recordedChunksRef = useRef([]);
 
   const { sessionId: sessionIdParam } = useParams();
+  const history = useHistory();
   const sessionId = parseInt(sessionIdParam, 10);
   const isLoaded = useRef(false);
 
@@ -36,7 +46,6 @@ export const SessionPlayer = () => {
   // When the page is mounted, load available samples
   useEffect(() => {
     if (isLoaded.current || !samples?.length) return;
-    console.log('loading samples');
     const audioSamples = samples.map((sample): AudioBuffer => {
       const buffer = new Float32Array(sample.arrayBuffer);
       const toneAudioBuffer = ToneAudioBuffer.fromArray(buffer);
@@ -119,45 +128,62 @@ export const SessionPlayer = () => {
     setIsPlaying(!isPlaying);
   };
 
+  const handleRemoveSample = (sampleId) => async () => {
+    try {
+      await db.samples.delete(sampleId);
+    } catch (error) {
+      console.error('Something went wrong while deleting sample', error);
+    }
+  };
+
   return (
     <>
       <Head>
         <title>Jambox</title>
       </Head>
+      <Page>
+        <PageContent>
+          <Flex
+            alignItems="baseline"
+            direction="row"
+            justifyContent="space-between"
+          >
+            <Heading size="md" mb="4">
+              Session
+            </Heading>
+            <IconButton
+              alignItems="center"
+              variant="ghost"
+              icon={<RiLogoutBoxRLine />}
+              aria-label="Go back to session listing"
+              onClick={() => history.push('/dashboard')}
+            />
+          </Flex>
 
-      <Flex flex="1" flexDir="column" p={2} bg="transparent">
-        <SimpleGrid columns={[2, 3, 4]} spacing={[5, 8]}>
-          {sounds.map((audioBuffer, i) => (
-            <SoundCard key={i} audioBuffer={audioBuffer} />
-          ))}
-        </SimpleGrid>
-      </Flex>
+          {!!samples?.length && (
+            <Flex flex="1" flexDir="column" bg="transparent" mb={20}>
+              <SimpleGrid columns={[2, 3, 4]} spacing={[5, 8]}>
+                {samples.map((sample, i) => (
+                  <SoundCard
+                    key={i}
+                    sample={sample}
+                    audioBuffer={sounds[i]}
+                    onRemove={handleRemoveSample(sample.id)}
+                  />
+                ))}
+              </SimpleGrid>
+            </Flex>
+          )}
 
-      <Card
-        position="fixed"
-        bottom={0}
-        left={0}
-        right={0}
-        m={2}
-        alignItems="center"
-      >
-        <BpmManager />
-        <Spacer />
-        <IconButton
-          variant="ghost"
-          colorScheme={isRecording ? 'red' : null}
-          aria-label={isRecording ? 'Stop recording' : 'Start recording'}
-          icon={isRecording ? <RiStopCircleLine /> : <RiRecordCircleLine />}
-          onClick={isRecording ? handleStopRecording : handleStartRecording}
-        />
-
-        <IconButton
-          variant="ghost"
-          aria-label={isPlaying ? 'Stop all sample' : 'Play all samples'}
-          icon={isPlaying ? <RiPauseCircleLine /> : <RiPlayCircleLine />}
-          onClick={handlePlayPause}
-        />
-      </Card>
+          <ToolBar
+            isPlaying={isPlaying}
+            isRecording={isRecording}
+            onPlayPause={handlePlayPause}
+            onStartRecording={handleStartRecording}
+            onStopRecording={handleStopRecording}
+          />
+        </PageContent>
+      </Page>
     </>
   );
 };

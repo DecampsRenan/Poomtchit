@@ -55,7 +55,7 @@ const AppHead = () => {
 
   return (
     <Head>
-      <title>Jambox</title>
+      <title>Poomtchit</title>
       <meta
         name="viewport"
         content="initial-scale=1, viewport-fit=cover, user-scalable=no"

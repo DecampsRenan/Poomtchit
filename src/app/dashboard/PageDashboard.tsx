@@ -1,10 +1,8 @@
 import React, { useRef } from 'react';
 
 import {
-  Alert,
-  AlertIcon,
-  AlertTitle,
   Button,
+  Center,
   Flex,
   Heading,
   Modal,
@@ -18,17 +16,16 @@ import {
   useDisclosure,
 } from '@chakra-ui/react';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Page, PageContent } from '@/app/layout';
 import { db } from '@/config/db';
 
+import { PageContainer } from '../layout/Page';
 import { SessionCard } from './SessionCard';
 
 export const PageDashboard = () => {
-  const { t } = useTranslation();
   const history = useHistory();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const sessionIdToDelete = useRef<number>();
@@ -66,43 +63,37 @@ export const PageDashboard = () => {
   return (
     <Page>
       <PageContent>
-        <Heading size="md" mb="4">
-          {t('dashboard:title')}
-        </Heading>
+        <Center>
+          <Heading size="md" mb="4">
+            🎶 Poomtchit
+          </Heading>
+        </Center>
 
         {isSessionsEmpty && (
-          <Alert
-            borderRadius="md"
-            colorScheme="brand"
-            flexDir="column"
-            justifyContent="flex-start"
+          <Flex
+            flexDirection="column"
+            alignItems="center"
+            justifyContent="center"
+            textAlign="center"
+            p={4}
+            borderRadius={4}
+            borderWidth={1}
           >
-            <Flex w="full">
-              <AlertIcon />
-              <AlertTitle>No session found.</AlertTitle>
-            </Flex>
-            <Button
-              colorScheme="brand"
-              size="lg"
-              mt={4}
-              w="full"
-              onClick={createNewSession}
-            >
-              Create a new one
-            </Button>
-          </Alert>
+            <Text mb={1} fontSize="lg" fontWeight="bold">
+              No session available
+            </Text>
+            <Text maxWidth="sm">
+              A session is a collection of samples you can play with. Click the
+              create button below to start a new one !
+            </Text>
+          </Flex>
         )}
 
-        {!isSessionsEmpty && (
-          <Button
-            colorScheme="brand"
-            size="lg"
-            mb={4}
-            onClick={createNewSession}
-          >
+        <PageContainer position="fixed" bottom={0} left={0} right={0} p={4}>
+          <Button colorScheme="brand" size="lg" onClick={createNewSession}>
             Create new session
           </Button>
-        )}
+        </PageContainer>
 
         <Stack>
           {filteredSessions?.map((session) => (

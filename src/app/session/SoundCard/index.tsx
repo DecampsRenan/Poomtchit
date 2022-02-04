@@ -19,6 +19,7 @@ import {
 import { Player, Transport } from 'tone';
 
 import { ConfirmMenuItem } from '@/components';
+import { Sample } from '@/config/db';
 
 import { Card } from '../Card';
 
@@ -30,8 +31,26 @@ export const usePlayer = ({ audioBuffer }: UsePlayerParams) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const playerRef = useRef<Player>(null);
+  const queuedOps = useRef([]);
 
-  const togglePlay = () => setIsPlaying(!isPlaying);
+  const togglePlay = () => {
+    queuedOps.current.push(() => setIsPlaying(!isPlaying));
+  };
+
+  useEffect(() => {
+    // unqueue samples operations on each beat (so everything is synced to the bpm)
+    const scheduleId = Transport.schedule(() => {
+      const operations = queuedOps.current;
+      console.log('update');
+      if (!operations?.length) return;
+      operations.forEach((operation) => operation());
+      queuedOps.current = [];
+    }, '1m');
+
+    return () => {
+      Transport.clear(scheduleId);
+    };
+  }, []);
 
   // React to global transport changes
   useEffect(() => {
@@ -74,16 +93,15 @@ export const usePlayer = ({ audioBuffer }: UsePlayerParams) => {
   }, [isPlaying]);
 
   const restart = () => {
-    playerRef?.current.restart();
+    queuedOps.current.push(() => playerRef?.current.restart());
   };
 
   const stop = () => {
-    setIsPlaying(false);
-    playerRef?.current.stop();
+    queuedOps.current.push(() => setIsPlaying(false));
   };
 
   const toggleMute = () => {
-    playerRef?.current.set({ mute: !isMuted });
+    queuedOps.current.push(() => playerRef?.current.set({ mute: !isMuted }));
     setIsMuted(!isMuted);
   };
 
@@ -99,10 +117,15 @@ export const usePlayer = ({ audioBuffer }: UsePlayerParams) => {
 
 export type SoundCardProps = {
   audioBuffer: AudioBuffer;
+  sample: Sample;
   onRemove?: () => void;
 };
 
-export const SoundCard = ({ audioBuffer, onRemove }: SoundCardProps) => {
+export const SoundCard = ({
+  audioBuffer,
+  onRemove,
+  sample,
+}: SoundCardProps) => {
   const { isMuted, isPlaying, restart, stop, togglePlay, toggleMute } =
     usePlayer({ audioBuffer });
 
