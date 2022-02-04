@@ -89,7 +89,14 @@ export const PageDashboard = () => {
           </Flex>
         )}
 
-        <PageContainer position="fixed" bottom={0} left={0} right={0} p={4}>
+        <PageContainer
+          position="fixed"
+          bottom={0}
+          left={0}
+          right={0}
+          p={4}
+          zIndex={1}
+        >
           <Button colorScheme="brand" size="lg" onClick={createNewSession}>
             Create new session
           </Button>

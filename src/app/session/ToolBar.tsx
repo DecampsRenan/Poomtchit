@@ -17,7 +17,14 @@ export const ToolBar = ({
   isPlaying,
   onPlayPause,
 }) => (
-  <PageContainer bottom={0} left={0} right={0} position="fixed" p={4}>
+  <PageContainer
+    bottom={0}
+    left={0}
+    right={0}
+    position="fixed"
+    p={4}
+    zIndex={1}
+  >
     <Card>
       <BpmManager />
       <Spacer />
