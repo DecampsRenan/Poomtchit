@@ -41,7 +41,6 @@ export const usePlayer = ({ audioBuffer }: UsePlayerParams) => {
     // unqueue samples operations on each beat (so everything is synced to the bpm)
     const scheduleId = Transport.schedule(() => {
       const operations = queuedOps.current;
-      console.log('update');
       if (!operations?.length) return;
       operations.forEach((operation) => operation());
       queuedOps.current = [];
