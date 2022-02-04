@@ -1,30 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 
-import {
-  Flex,
-  Heading,
-  IconButton,
-  SimpleGrid,
-  Spacer,
-} from '@chakra-ui/react';
+import { Flex, Heading, IconButton, SimpleGrid } from '@chakra-ui/react';
 import { useLiveQuery } from 'dexie-react-hooks';
 import Head from 'next/head';
-import {
-  RiLogoutBoxRLine,
-  RiPauseCircleLine,
-  RiPlayCircleLine,
-  RiRecordCircleLine,
-  RiStopCircleLine,
-} from 'react-icons/ri';
+import { RiLogoutBoxRLine } from 'react-icons/ri';
 import { useHistory, useParams } from 'react-router-dom';
 import { ToneAudioBuffer, Transport, context, start } from 'tone';
 
 import { Page, PageContent } from '@/app/layout';
-import { BpmManager } from '@/app/session/BpmManager';
 import { SoundCard } from '@/app/session/SoundCard';
 import { db } from '@/config/db';
 
-import { Card } from './Card';
 import { ToolBar } from './ToolBar';
 
 export const SessionPlayer = () => {

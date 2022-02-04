@@ -31,25 +31,26 @@ export const usePlayer = ({ audioBuffer }: UsePlayerParams) => {
   const [isPlaying, setIsPlaying] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const playerRef = useRef<Player>(null);
-  const queuedOps = useRef([]);
+  // const queuedOps = useRef([]);
 
   const togglePlay = () => {
-    queuedOps.current.push(() => setIsPlaying(!isPlaying));
+    // queuedOps.current.push(() => setIsPlaying(!isPlaying));
+    setIsPlaying(!isPlaying);
   };
 
-  useEffect(() => {
-    // unqueue samples operations on each beat (so everything is synced to the bpm)
-    const scheduleId = Transport.schedule(() => {
-      const operations = queuedOps.current;
-      if (!operations?.length) return;
-      operations.forEach((operation) => operation());
-      queuedOps.current = [];
-    }, '1m');
+  // useEffect(() => {
+  //   // unqueue samples operations on each beat (so everything is synced to the bpm)
+  //   const scheduleId = Transport.schedule(() => {
+  //     const operations = queuedOps.current;
+  //     if (!operations?.length) return;
+  //     operations.forEach((operation) => operation());
+  //     queuedOps.current = [];
+  //   }, '1m');
 
-    return () => {
-      Transport.clear(scheduleId);
-    };
-  }, []);
+  //   return () => {
+  //     Transport.clear(scheduleId);
+  //   };
+  // }, []);
 
   // React to global transport changes
   useEffect(() => {
@@ -92,15 +93,18 @@ export const usePlayer = ({ audioBuffer }: UsePlayerParams) => {
   }, [isPlaying]);
 
   const restart = () => {
-    queuedOps.current.push(() => playerRef?.current.restart());
+    // queuedOps.current.push(() => playerRef?.current.restart());
+    playerRef?.current.restart();
   };
 
   const stop = () => {
-    queuedOps.current.push(() => setIsPlaying(false));
+    // queuedOps.current.push(() => setIsPlaying(false));
+    setIsPlaying(false);
   };
 
   const toggleMute = () => {
-    queuedOps.current.push(() => playerRef?.current.set({ mute: !isMuted }));
+    // queuedOps.current.push(() => playerRef?.current.set({ mute: !isMuted }));
+    playerRef?.current.set({ mute: !isMuted });
     setIsMuted(!isMuted);
   };
 
