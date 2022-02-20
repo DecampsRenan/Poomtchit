@@ -147,7 +147,7 @@ export const SessionPlayer = () => {
           </Flex>
 
           {!!samples?.length && (
-            <Flex flex="1" flexDir="column" bg="transparent" mb={20}>
+            <Flex flexGrow={1} flexDir="column" bg="transparent" mb={20}>
               <SimpleGrid columns={[2, 3, 4]} spacing={[5, 8]}>
                 {samples.map((sample, i) => (
                   <SoundCard

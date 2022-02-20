@@ -1,6 +1,7 @@
 import React, { useRef } from 'react';
 
 import {
+  Box,
   Button,
   Center,
   Flex,
@@ -64,10 +65,18 @@ export const PageDashboard = () => {
     <Page>
       <PageContent>
         <Center>
-          <Heading size="md" mb="4">
-            🎶 Poomtchit
+          <Heading size="2xl" mb={8} mt={8} color="#FF006D">
+            Poomtchit
           </Heading>
         </Center>
+
+        <Box mb={8}>
+          <Text color="gray.700">
+            Your sessions are listed below. Don't worry, all actions are
+            automatically persisted in your browser, so you can quit and come
+            back without any lost 👌
+          </Text>
+        </Box>
 
         {isSessionsEmpty && (
           <Flex
@@ -89,6 +98,17 @@ export const PageDashboard = () => {
           </Flex>
         )}
 
+        <Stack mb={20}>
+          {filteredSessions?.map((session) => (
+            <SessionCard
+              key={session.id}
+              session={session}
+              onDelete={handleConfirmDelete(session.id)}
+              onOpen={handleOpenSession(session.id)}
+            />
+          ))}
+        </Stack>
+
         <PageContainer
           position="fixed"
           bottom={0}
@@ -101,17 +121,6 @@ export const PageDashboard = () => {
             Create new session
           </Button>
         </PageContainer>
-
-        <Stack>
-          {filteredSessions?.map((session) => (
-            <SessionCard
-              key={session.id}
-              session={session}
-              onDelete={handleConfirmDelete(session.id)}
-              onOpen={handleOpenSession(session.id)}
-            />
-          ))}
-        </Stack>
 
         <Modal isOpen={isOpen} onClose={onClose} isCentered size="xs">
           <ModalOverlay />

@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 
 import '@/config';
 import theme from '@/theme';
+import { Fonts } from '@/theme/externals/Fonts';
 
 import { AVAILABLE_LANGUAGES } from './constants/i18n';
 
@@ -20,6 +21,7 @@ export const Providers = ({ children }) => {
           'ltr',
       }}
     >
+      <Fonts />
       {children}
     </ChakraProvider>
   );
