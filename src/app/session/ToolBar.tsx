@@ -6,6 +6,8 @@ import {
   RiStopCircleLine,
 } from 'react-icons/ri';
 
+import { TempoMeter } from '@/app/session/TempoMeter';
+
 import { PageContainer } from '../layout';
 import { BpmManager } from './BpmManager';
 import { Card } from './Card';
@@ -25,8 +27,10 @@ export const ToolBar = ({
     p={4}
     zIndex={1}
   >
-    <Card>
+    <Card alignItems="center">
       <BpmManager />
+      <Spacer />
+      <TempoMeter />
       <Spacer />
       <IconButton
         variant="ghost"
