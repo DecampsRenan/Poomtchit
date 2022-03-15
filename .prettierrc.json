@@ -5,7 +5,15 @@
   "tabWidth": 2,
   "trailingComma": "es5",
   "arrowParens": "always",
-  "importOrder": ["^react$", "^(?!^react$|^@/|^[./]).*", "^@/(.*)$", "^[./]"],
+  "importOrder": [
+    "^react$",
+    "^(?!^react$|^@/|^[./]).*",
+    "^@/app/(.*)$",
+    "^@/config(.*)$",
+    "^@/component(.*)$",
+    "^@/(.*)$",
+    "^[./]"
+  ],
   "importOrderSeparation": true,
   "importOrderSortSpecifiers": true,
   "importOrderParserPlugins": ["jsx", "typescript"]
