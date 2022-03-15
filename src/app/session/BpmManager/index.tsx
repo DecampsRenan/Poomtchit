@@ -1,7 +1,8 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react';
+import React, { FC, useCallback, useEffect, useRef, useState } from 'react';
 
 import {
   Button,
+  ButtonProps,
   Center,
   Modal,
   ModalBody,
@@ -15,9 +16,7 @@ import {
 } from '@chakra-ui/react';
 import { Transport } from 'tone';
 
-export type BpmManagerProps = {
-  onBpmChange?(newBpmValue: number): void;
-};
+export type BpmManagerProps = ButtonProps;
 
 export const useBpm = () => {
   const [bpm, setBpm] = useState(90);
@@ -38,13 +37,13 @@ export const useBpm = () => {
   };
 };
 
-export const BpmManager = ({ onBpmChange }: BpmManagerProps) => {
+export const BpmManager: FC<BpmManagerProps> = (props) => {
   const { bpm, setBpm } = useBpm();
   const { onOpen, onClose, isOpen } = useDisclosure();
 
   return (
     <>
-      <Button variant="ghost" fontWeight="bold" onClick={onOpen}>
+      <Button variant="ghost" fontWeight="bold" onClick={onOpen} {...props}>
         {`${bpm} bpm`}
       </Button>
 
