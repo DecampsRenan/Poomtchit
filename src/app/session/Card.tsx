@@ -1,6 +1,10 @@
-import { Flex } from '@chakra-ui/react';
+import React, { FC } from 'react';
 
-export const Card = (props) => (
+import { Flex, FlexProps } from '@chakra-ui/react';
+
+export type CardProps = FlexProps;
+
+export const Card: FC<CardProps> = (props) => (
   <Flex
     flexDir="row"
     p={2}

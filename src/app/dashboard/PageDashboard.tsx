@@ -21,6 +21,7 @@ import { useHistory } from 'react-router-dom';
 import { v4 as uuidv4 } from 'uuid';
 
 import { Page, PageContent } from '@/app/layout';
+
 import { db } from '@/config/db';
 
 import { PageContainer } from '../layout/Page';
@@ -65,13 +66,13 @@ export const PageDashboard = () => {
     <Page>
       <PageContent>
         <Center>
-          <Heading size="2xl" mb={8} mt={8} color="#FF006D">
+          <Heading size="2xl" mb={8} mt={8} color="brand.500">
             Poomtchit
           </Heading>
         </Center>
 
         <Box mb={8}>
-          <Text color="gray.700">
+          <Text color="gray.700" textAlign={{ base: 'center', sm: 'left' }}>
             Your sessions are listed below. Don't worry, all actions are
             automatically persisted in your browser, so you can quit and come
             back without any lost 👌

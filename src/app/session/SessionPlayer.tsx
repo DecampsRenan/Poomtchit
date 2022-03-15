@@ -9,9 +9,9 @@ import { ToneAudioBuffer, Transport, context, start } from 'tone';
 
 import { Page, PageContent } from '@/app/layout';
 import { SoundCard } from '@/app/session/SoundCard';
-import { db } from '@/config/db';
+import { ToolBar } from '@/app/session/ToolBar';
 
-import { ToolBar } from './ToolBar';
+import { db } from '@/config/db';
 
 export const SessionPlayer = () => {
   const recordedChunksRef = useRef([]);
@@ -49,48 +49,49 @@ export const SessionPlayer = () => {
     }
   }, [isPlaying]);
 
+  const handleNewSoundStreamData = (e) => {
+    if (!recordedChunksRef?.current) return;
+    if (e.data.size > 0) {
+      recordedChunksRef.current.push(e.data);
+    }
+  };
+
+  const handleStopRecord = useCallback(async () => {
+    const buffer = new Blob(recordedChunksRef.current);
+    const audioBlobToBuffer = await buffer.arrayBuffer();
+    const audioBuffer = await context.decodeAudioData(audioBlobToBuffer);
+    const toneAudioBuffer = new ToneAudioBuffer(audioBuffer);
+
+    // Persist sound in the indexed db
+    try {
+      await db.samples.add({
+        sessionId,
+        arrayBuffer: (toneAudioBuffer.toArray() as Float32Array).buffer,
+      });
+    } catch (error) {
+      console.error('Something went wrong while saving the new sample', error);
+    }
+
+    setSounds((oldValue) => [...oldValue, audioBuffer]);
+
+    recordedChunksRef.current = [];
+    setIsRecording(false);
+  }, [sessionId]);
+
   const initSoundSystem = useCallback(
     async (stream: MediaStream) => {
       await start();
 
-      const options = { mimeType: 'audio/webm' };
-      mediaRecorderRef.current = new MediaRecorder(stream, options);
-
-      // TODO: memory leak, remember to remove the event
-      mediaRecorderRef.current.addEventListener('dataavailable', (e) => {
-        if (!recordedChunksRef?.current) return;
-        if (e.data.size > 0) {
-          recordedChunksRef.current.push(e.data);
-        }
+      mediaRecorderRef.current = new MediaRecorder(stream, {
+        mimeType: 'audio/webm',
       });
-
-      // TODO: memory leak, remember to remove the event
-      mediaRecorderRef.current.addEventListener('stop', async (e) => {
-        const buffer = new Blob(recordedChunksRef.current);
-        const audioBlobToBuffer = await buffer.arrayBuffer();
-        const audioBuffer = await context.decodeAudioData(audioBlobToBuffer);
-        const toneAudioBuffer = new ToneAudioBuffer(audioBuffer);
-
-        // Persist sound in the indexed db
-        try {
-          await db.samples.add({
-            sessionId,
-            arrayBuffer: (toneAudioBuffer.toArray() as Float32Array).buffer,
-          });
-        } catch (error) {
-          console.error(
-            'Something went wrong while saving the new smaple',
-            error
-          );
-        }
-
-        setSounds((oldValue) => [...oldValue, audioBuffer]);
-
-        recordedChunksRef.current = [];
-        setIsRecording(false);
-      });
+      mediaRecorderRef.current.addEventListener(
+        'dataavailable',
+        handleNewSoundStreamData
+      );
+      mediaRecorderRef.current.addEventListener('stop', handleStopRecord);
     },
-    [sessionId]
+    [handleStopRecord]
   );
 
   const handleStopRecording = async () => {
@@ -108,7 +109,15 @@ export const SessionPlayer = () => {
     navigator.mediaDevices
       .getUserMedia({ audio: true, video: false })
       .then(initSoundSystem);
-  }, [initSoundSystem]);
+
+    return () => {
+      mediaRecorderRef?.current?.removeEventListener(
+        'dataavailable',
+        handleNewSoundStreamData
+      );
+      mediaRecorderRef?.current?.removeEventListener('stop', handleStopRecord);
+    };
+  }, [handleStopRecord, initSoundSystem]);
 
   const handlePlayPause = () => {
     setIsPlaying(!isPlaying);
