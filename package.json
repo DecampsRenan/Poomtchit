@@ -1,8 +1,8 @@
 {
-  "name": "start-ui",
+  "name": "poomtchit",
   "private": true,
   "version": "1.0.0",
-  "description": "Opinionated UI starter with ⚛️ React, ⚡️ Chakra UI, ⚛️ React Query & 🐜 Formiz — From the 🐻 BearStudio Team",
+  "description": "🎼 Create music by mixing different sounds taken from your microphone together (kinda sort of loopstation)",
   "scripts": {
     "prepare": "husky install",
     "test": "jest --roots src --watch",
@@ -21,20 +21,20 @@
     "*.{ts,tsx,js,jsx}": "eslint --cache --fix"
   },
   "dependencies": {
-    "@chakra-ui/react": "1.8.5",
+    "@chakra-ui/react": "1.8.6",
     "@chakra-ui/theme-tools": "1.3.6",
-    "@emotion/react": "11.8.1",
+    "@emotion/react": "11.8.2",
     "@emotion/styled": "11.8.1",
-    "@fontsource/inter": "4.5.4",
+    "@fontsource/inter": "4.5.5",
     "@formiz/core": "1.8.0",
     "@formiz/validations": "1.0.0",
-    "axios": "0.26.0",
-    "dayjs": "1.10.7",
+    "axios": "0.26.1",
+    "dayjs": "1.11.0",
     "dexie": "3.2.1",
     "dexie-react-hooks": "1.1.1",
-    "framer-motion": "6.2.6",
-    "history": "5.2.0",
-    "i18next": "21.6.11",
+    "framer-motion": "6.2.8",
+    "history": "5.3.0",
+    "i18next": "21.6.14",
     "isomorphic-form-data": "2.0.0",
     "lodash": "4.17.21",
     "next": "12.1.0",
@@ -43,7 +43,7 @@
     "react-day-picker": "7.4.10",
     "react-dom": "17.0.2",
     "react-error-boundary": "3.1.4",
-    "react-i18next": "11.15.4",
+    "react-i18next": "11.16.1",
     "react-icons": "4.3.1",
     "react-popper": "2.2.5",
     "react-query": "3.34.16",
@@ -51,7 +51,7 @@
     "react-select": "5.2.2",
     "tone": "14.7.77",
     "uuid": "8.3.2",
-    "zustand": "3.7.0"
+    "zustand": "3.7.1"
   },
   "devDependencies": {
     "@babel/core": "7.16.0",
@@ -83,22 +83,22 @@
     "eslint-plugin-react": "7.27.1",
     "eslint-plugin-react-hooks": "4.3.0",
     "husky": "7.0.4",
-    "jest": "27.4.3",
-    "lint-staged": "12.3.4",
-    "prettier": "2.5.1",
+    "jest": "27.5.1",
+    "lint-staged": "12.3.7",
+    "prettier": "2.6.0",
     "react-is": "17.0.2",
-    "storybook-dark-mode": "1.0.8",
+    "storybook-dark-mode": "1.0.9",
     "tsconfig-paths-webpack-plugin": "3.5.2",
-    "typescript": "4.5.5"
+    "typescript": "4.6.2"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/bearstudio/start-ui.git"
   },
   "author": {
-    "name": "Ivan Dalmet",
-    "email": "ivan@dalmet.fr",
-    "url": "https://github.com/ivan-dalmet"
+    "name": "Renan Decamps",
+    "email": "renan.decamps@gmail.com",
+    "url": "https://github.com/DecampsRenan"
   },
   "license": "MIT",
   "bugs": {
