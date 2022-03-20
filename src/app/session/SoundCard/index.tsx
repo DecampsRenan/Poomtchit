@@ -18,10 +18,9 @@ import {
 } from 'react-icons/ri';
 import { Player, Transport } from 'tone';
 
-import { ConfirmMenuItem } from '@/components';
 import { Sample } from '@/config/db';
 
-import { Card } from '../Card';
+import { ConfirmMenuItem } from '@/components';
 
 export type UsePlayerParams = {
   audioBuffer: AudioBuffer;
@@ -133,7 +132,7 @@ export const SoundCard = ({
     usePlayer({ audioBuffer });
 
   return (
-    <Card flexDir="column" p={0}>
+    <Flex layerStyle="card" flexDir="column" p={0}>
       <Flex justifyContent="center" position="relative">
         <Button
           minHeight={20}
@@ -192,6 +191,6 @@ export const SoundCard = ({
           onClick={stop}
         />
       </Flex>
-    </Card>
+    </Flex>
   );
 };

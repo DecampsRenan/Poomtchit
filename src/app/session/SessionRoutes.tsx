@@ -3,9 +3,9 @@ import React from 'react';
 import { Switch, useRouteMatch } from 'react-router-dom';
 
 import { Route } from '@/app/router';
-import { Error404 } from '@/errors';
+import { SessionPlayer } from '@/app/session/player';
 
-import { SessionPlayer } from './SessionPlayer';
+import { Error404 } from '@/errors';
 
 const SessionRoutes = () => {
   const { url } = useRouteMatch();

@@ -12,6 +12,15 @@ const foundations = {
   space: spacing,
   layout,
   zIndices,
+  layerStyles: {
+    card: {
+      borderRadius: 5,
+      borderWidth: 1,
+      shadow: 'md',
+      bgColor: 'white',
+      p: 2,
+    },
+  },
 };
 
 export default foundations;

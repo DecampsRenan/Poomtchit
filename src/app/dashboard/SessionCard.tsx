@@ -2,7 +2,6 @@ import { Button, Flex, Text } from '@chakra-ui/react';
 import dayjs from 'dayjs';
 import { useLiveQuery } from 'dexie-react-hooks';
 
-import { Card } from '@/app/session/Card';
 import { db } from '@/config/db';
 
 export const SessionCard = ({ session, onDelete, onOpen }) => {
@@ -11,7 +10,7 @@ export const SessionCard = ({ session, onDelete, onOpen }) => {
   );
 
   return (
-    <Card flexDir="column" p={0}>
+    <Flex layerStyle="card" flexDir="column" p={0}>
       <Flex mb={2} flexDir="column" p={4}>
         <Text fontWeight="bold">
           Session du {dayjs(session.createdAt).format('DD/MM/YYYY')}
@@ -49,6 +48,6 @@ export const SessionCard = ({ session, onDelete, onOpen }) => {
           Open
         </Button>
       </Flex>
-    </Card>
+    </Flex>
   );
 };

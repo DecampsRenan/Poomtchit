@@ -1,4 +1,4 @@
-import { IconButton, Spacer } from '@chakra-ui/react';
+import { Flex, IconButton, Spacer } from '@chakra-ui/react';
 import {
   RiPauseCircleLine,
   RiPlayCircleLine,
@@ -6,11 +6,9 @@ import {
   RiStopCircleLine,
 } from 'react-icons/ri';
 
+import { PageContainer } from '@/app/layout';
+import { BpmManager } from '@/app/session/BpmManager';
 import { TempoMeter } from '@/app/session/TempoMeter';
-
-import { PageContainer } from '../layout';
-import { BpmManager } from './BpmManager';
-import { Card } from './Card';
 
 export const ToolBar = ({
   isRecording,
@@ -27,7 +25,7 @@ export const ToolBar = ({
     p={4}
     zIndex={1}
   >
-    <Card alignItems="center">
+    <Flex layerStyle="card" alignItems="center">
       <BpmManager />
       <Spacer />
       <TempoMeter />
@@ -46,6 +44,6 @@ export const ToolBar = ({
         icon={isPlaying ? <RiPauseCircleLine /> : <RiPlayCircleLine />}
         onClick={onPlayPause}
       />
-    </Card>
+    </Flex>
   </PageContainer>
 );
